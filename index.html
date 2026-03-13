@@ -1,24 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>Malaysia MDAC Assistant</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>马来西亚 MDAC 入境卡助手</title>
 
 <style>
 body{
-font-family: Arial;
-background:#f4f6fb;
-margin:0;
+font-family:Arial;
+background:#f5f5f5;
 padding:40px;
 }
 
 .container{
-max-width:600px;
-margin:auto;
 background:white;
 padding:30px;
 border-radius:10px;
+max-width:600px;
+margin:auto;
 box-shadow:0 5px 20px rgba(0,0,0,0.1);
 }
 
@@ -29,9 +27,8 @@ text-align:center;
 input,select{
 width:100%;
 padding:10px;
-margin:10px 0;
-border:1px solid #ddd;
-border-radius:5px;
+margin-top:10px;
+margin-bottom:20px;
 }
 
 button{
@@ -43,13 +40,6 @@ border:none;
 border-radius:5px;
 font-size:16px;
 }
-
-.notice{
-font-size:12px;
-color:#777;
-text-align:center;
-margin-bottom:20px;
-}
 </style>
 </head>
 
@@ -57,32 +47,55 @@ margin-bottom:20px;
 
 <div class="container">
 
-<h1>Malaysia MDAC Assistant</h1>
+<h1>马来西亚 MDAC 入境助手</h1>
 
-<div class="notice">
-Unofficial helper for Malaysia Digital Arrival Card
-</div>
+<label>姓名</label>
+<input id="name">
 
-<h3>Personal Information</h3>
+<label>护照号码</label>
+<input id="passport">
 
-<input placeholder="Full Name">
-<input placeholder="Passport Number">
-
-<select>
-<option>Nationality</option>
-<option>China</option>
-<option>Japan</option>
-<option>Korea</option>
+<label>国籍</label>
+<select id="nation">
+<option value="CHINA">中国</option>
+<option value="MALAYSIA">马来西亚</option>
 </select>
 
-<h3>Arrival Information</h3>
+<label>出生日期</label>
+<input type="date" id="dob">
 
-<input type="date">
-<input placeholder="Flight Number">
+<label>入境日期</label>
+<input type="date" id="arrival">
 
-<button>Continue</button>
+<label>航班号</label>
+<input id="flight">
+
+<label>手机号</label>
+<input id="phone">
+
+<button onclick="save()">生成 MDAC</button>
 
 </div>
+
+<script>
+
+function save(){
+
+localStorage.setItem("name",document.getElementById("name").value)
+localStorage.setItem("passport",document.getElementById("passport").value)
+localStorage.setItem("nation",document.getElementById("nation").value)
+localStorage.setItem("dob",document.getElementById("dob").value)
+localStorage.setItem("arrival",document.getElementById("arrival").value)
+localStorage.setItem("flight",document.getElementById("flight").value)
+localStorage.setItem("phone",document.getElementById("phone").value)
+
+alert("资料已保存，准备跳转 MDAC 官网")
+
+window.location.href="https://imigresen-online.imi.gov.my/mdac/main"
+
+}
+
+</script>
 
 </body>
 </html>
