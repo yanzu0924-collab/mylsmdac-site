@@ -1,123 +1,1053 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<title>MDAC Assistant</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>海神</title>
 
-<style>
-body{
-font-family:Arial;
-background:#f5f7fb;
-padding:40px;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-.container{
-max-width:600px;
-margin:auto;
-background:white;
-padding:30px;
-border-radius:10px;
-box-shadow:0 5px 15px rgba(0,0,0,0.1);
-}
+    body {
+      margin: 0;
+      background: #f5f7fb;
+      font-family: Arial, "Microsoft YaHei", sans-serif;
+      color: #001a4d;
+      font-size: 14px;
+    }
 
-h1{
-text-align:center;
-margin-bottom:30px;
-}
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px;
+    }
 
-input{
-width:100%;
-padding:10px;
-margin:8px 0;
-border:1px solid #ddd;
-border-radius:6px;
-}
+    .search-panel {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding: 14px;
+      background: #ffffff;
+      border: 1px solid #dfe6f2;
+      border-radius: 6px;
+      box-shadow: 0 6px 18px rgba(32, 56, 100, 0.06);
+    }
 
-button{
-width:100%;
-padding:14px;
-margin-top:10px;
-background:#ff6b3d;
-color:white;
-border:none;
-border-radius:8px;
-font-size:16px;
-cursor:pointer;
-}
+    .search-panel input {
+      flex: 1;
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid #d4dbea;
+      border-radius: 3px;
+      outline: none;
+      color: #001a4d;
+      font-size: 14px;
+    }
 
-textarea{
-width:100%;
-height:200px;
-margin-top:15px;
-padding:10px;
-border-radius:6px;
-border:1px solid #ddd;
-}
-</style>
+    .search-panel input:focus {
+      border-color: #4169ff;
+    }
+
+    .search-panel button {
+      width: 90px;
+      height: 38px;
+      border: none;
+      border-radius: 3px;
+      background: #4169ff;
+      color: #ffffff;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .search-panel button:hover {
+      background: #3155d9;
+    }
+
+    .search-panel button:disabled {
+      background: #9aa8c2;
+      cursor: not-allowed;
+    }
+
+
+    .panel {
+      background: #ffffff;
+      border: 1px solid #dfe6f2;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(32, 56, 100, 0.06);
+    }
+
+    .panel-title {
+      height: 54px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      border-bottom: 1px solid #e7edf6;
+      font-size: 16px;
+      font-weight: 700;
+      color: #001a4d;
+    }
+
+    .address-info {
+      position: relative;
+      min-height: 126px;
+      padding: 12px 150px 12px 14px;
+    }
+
+    .address-actions {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 112px;
+    }
+
+    .address-action-btn {
+      width: 100%;
+      height: 34px;
+      border: 1px solid #d4dbea;
+      border-radius: 3px;
+      background: #ffffff;
+      color: #4169ff;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .address-action-btn:hover {
+      border-color: #4169ff;
+      background: #f7f9ff;
+    }
+
+    .address-action-btn:disabled {
+      border-color: #d4dbea;
+      background: #f1f3f7;
+      color: #9aa8c2;
+      cursor: not-allowed;
+    }
+
+    .info-row {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      min-height: 34px;
+      align-items: center;
+    }
+
+    .info-label {
+      color: #5f76a3;
+      font-size: 13px;
+    }
+
+    .info-value {
+      color: #001a4d;
+      font-weight: 700;
+      word-break: break-all;
+    }
+
+    .main-address {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+
+    .copy-text {
+      cursor: pointer;
+    }
+
+    #balanceBox {
+      display: inline-block;
+      padding: 3px 0;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    .copy-text:hover {
+      color: #4169ff;
+    }
+
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 12px;
+      color: #5f76a3;
+      font-size: 13px;
+      font-weight: 400;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .link-btn:hover {
+      color: #4169ff;
+    }
+
+    .status-line {
+      min-height: 20px;
+      padding: 0 14px 12px;
+      color: #6b7b99;
+      font-size: 13px;
+    }
+
+    .error-line {
+      color: #d93025;
+    }
+
+    .api-row {
+      display: none;
+      padding: 0 14px 14px;
+    }
+
+    .api-row.show {
+      display: block;
+    }
+
+    .api-row input {
+      width: 100%;
+      height: 34px;
+      padding: 0 10px;
+      border: 1px solid #d4dbea;
+      border-radius: 3px;
+      outline: none;
+    }
+
+    .table-top {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      border-bottom: 1px solid #e7edf6;
+    }
+
+    .table-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #001a4d;
+    }
+
+    .table-summary {
+      font-size: 13px;
+      color: #5f76a3;
+      white-space: nowrap;
+    }
+
+    .table-summary span {
+      margin-left: 6px;
+    }
+
+    .page-btn {
+      color: #5f76a3;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .page-btn:hover {
+      color: #4169ff;
+    }
+
+    .page-disabled {
+      color: #b7c1d4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .table-scroll {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-variant-numeric: tabular-nums;
+    }
+
+    thead th {
+      height: 40px;
+      background: linear-gradient(180deg, #f7f9fe, #eef3fb);
+      color: #526b99;
+      font-weight: 500;
+      text-align: left;
+      padding: 0 14px;
+      border-bottom: 1px solid #e7edf6;
+    }
+
+    tbody td {
+      min-height: 58px;
+      padding: 10px 12px;
+      border-bottom: 1px solid #e9eef6;
+      color: #001a4d;
+      vertical-align: middle;
+    }
+
+    tbody tr:hover {
+      background: #fafcff;
+    }
+
+    .hash-col {
+      width: 22%;
+    }
+
+    .time-col {
+      width: 10%;
+      white-space: nowrap;
+    }
+
+    .addr-col {
+      width: 28%;
+    }
+
+    .amount-col {
+      width: 12%;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .hash-text {
+      display: inline-block;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #4169ff;
+      cursor: pointer;
+      vertical-align: middle;
+    }
+
+    .hash-text:hover {
+      text-decoration: underline;
+    }
+
+    .addr-full {
+      display: inline-block;
+      width: 100%;
+      cursor: pointer;
+      word-break: normal;
+      overflow-wrap: normal;
+      white-space: nowrap;
+      line-height: 1.4;
+      letter-spacing: -0.2px;
+    }
+
+    .addr-self {
+      color: #001a4d;
+      font-weight: 700;
+    }
+
+    .addr-other {
+      color: #4169ff;
+      font-weight: 500;
+    }
+
+    .addr-other:hover,
+    .addr-self:hover {
+      text-decoration: underline;
+    }
+
+    .amount-in {
+      color: #16a34a;
+      font-weight: 700;
+    }
+
+    .amount-out {
+      color: #e60000;
+      font-weight: 700;
+    }
+
+    .pending-tag {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: #fff4d6;
+      color: #8a5a00;
+      font-size: 12px;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .ok-tag {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: #e8f7ee;
+      color: #16803a;
+      font-size: 12px;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .empty {
+      height: 80px;
+      text-align: center;
+      color: #8a9ab7;
+    }
+
+    @media (max-width: 900px) {
+      .search-panel {
+        flex-direction: column;
+      }
+
+      .search-panel button {
+        width: 100%;
+      }
+
+      .info-row {
+        grid-template-columns: 86px 1fr;
+      }
+
+      .main-address {
+        font-size: 16px;
+      }
+
+      table {
+        min-width: 1100px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="page">
 
-<h1>MDAC Assistant</h1>
+  <div class="search-panel">
+    <input id="addressInput" placeholder="输入 TRON 地址，例如：T 开头的钱包地址">
+    <button id="queryBtn" onclick="queryData()">查询/刷新</button>
+  </div>
 
-<input id="name" placeholder="Name">
-<input id="passport" placeholder="Passport Number">
-<input id="nationality" placeholder="Nationality">
-<input id="dob" placeholder="Date of Birth (YYYY-MM-DD)">
-<input id="email" placeholder="Email">
-<input id="phone" placeholder="Phone Number">
+  <div class="panel">
+    <div class="panel-title">地址信息</div>
 
-<button onclick="generate()">生成MDAC资料</button>
+    <div class="address-info">
+      <div class="info-row">
+        <div class="info-label">普通地址</div>
+        <div class="info-value">
+          <span id="addressBox" class="main-address">-</span>
+          <span class="link-btn" onclick="copyCurrentAddress()">复制</span>
+          <span class="link-btn">二维码</span>
+        </div>
+      </div>
 
-<textarea id="result" placeholder="生成后会显示在这里"></textarea>
+      <div class="info-row">
+        <div class="info-label">链</div>
+        <div class="info-value">TRX</div>
+      </div>
 
-<button onclick="copyText()">一键复制</button>
+      <div class="info-row">
+        <div class="info-label">余额</div>
+        <div class="info-value">
+          <span id="balanceBox" class="copy-text" onclick="copyBalance()">-</span>
+        </div>
+      </div>
 
-<button onclick="openMDAC()">打开MDAC官网</button>
+      <div class="address-actions">
+        <button class="address-action-btn" type="button" onclick="openCurrentAddress()">TRONSCAN</button>
+        <button id="updateBalanceBtn" class="address-action-btn" type="button" onclick="updateCurrentAddress()">更新余额</button>
+        <button class="address-action-btn" type="button" onclick="copyBalance()">复制余额</button>
+      </div>
+    </div>
+
+    <div class="api-row" id="apiRow" style="display:none;">
+      <input id="apiKeyInput" type="hidden" autocomplete="off">
+    </div>
+
+    <div id="statusBox" class="status-line"></div>
+    <div id="errorBox" class="status-line error-line"></div>
+  </div>
+
+  <div class="panel">
+    <div class="table-top">
+      <div class="table-title">交易</div>
+
+      <div class="table-summary">
+        <span id="firstPageBtn" class="page-btn" onclick="goFirstPage()">首页</span>
+        <span id="prevPageBtn" class="page-btn" onclick="goPrevPage()">&lt;</span>
+        <span id="pageText">1 / 1</span>
+        <span id="nextPageBtn" class="page-btn" onclick="goNextPage()">&gt;</span>
+        <span id="lastPageBtn" class="page-btn" onclick="goLastPage()">尾页</span>
+        <span id="totalText">共 0 条</span>
+      </div>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th class="hash-col">交易哈希</th>
+            <th class="time-col">时间</th>
+            <th class="addr-col">从</th>
+            <th class="addr-col">到</th>
+            <th class="amount-col">交易总额</th>
+          </tr>
+        </thead>
+
+        <tbody id="txBody">
+          <tr>
+            <td colspan="5" class="empty">请输入地址查询</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
 </div>
 
 <script>
+  const USDT_CONTRACT = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
+  const TRONGRID_BASE = "https://api.trongrid.io";
+  const DEFAULT_TRONGRID_API_KEY = "e39e6de7-6c7a-474b-8198-058cfbe437f0";
+  const TRANSACTION_CACHE_PREFIX = "TRON_USDT_TRANSACTIONS_";
+  const INITIAL_TRANSACTION_LIMIT = 50;
+  const UPDATE_TRANSACTION_LIMIT = 50;
 
-function generate(){
+  let allTransactions = [];
+  let currentPage = 1;
+  const pageSize = 10;
+  let currentQueryAddress = "";
+  let currentBalanceValue = "";
 
-let name=document.getElementById("name").value;
-let passport=document.getElementById("passport").value;
-let nationality=document.getElementById("nationality").value;
-let dob=document.getElementById("dob").value;
-let email=document.getElementById("email").value;
-let phone=document.getElementById("phone").value;
+  let activeQueryId = 0;
 
-let text=
-`Name: ${name}
-Passport: ${passport}
-Nationality: ${nationality}
-Date of Birth: ${dob}
-Email: ${email}
-Phone: ${phone}`;
+  const REQUEST_TIMEOUT_MS = 12000;
 
-document.getElementById("result").value=text;
+  window.addEventListener("DOMContentLoaded", () => {
+    const apiKeyInput = document.getElementById("apiKeyInput");
+    const savedApiKey = localStorage.getItem("TRONGRID_API_KEY") || DEFAULT_TRONGRID_API_KEY;
+    apiKeyInput.value = savedApiKey;
+    if (!localStorage.getItem("TRONGRID_API_KEY") && DEFAULT_TRONGRID_API_KEY) {
+      localStorage.setItem("TRONGRID_API_KEY", DEFAULT_TRONGRID_API_KEY);
+    }
+    apiKeyInput.addEventListener("input", () => {
+      localStorage.setItem("TRONGRID_API_KEY", apiKeyInput.value.trim());
+    });
 
-}
+    document.getElementById("addressInput").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") queryData();
+    });
+  });
 
-function copyText(){
+  function setStatus(text) {
+    document.getElementById("statusBox").textContent = text || "";
+  }
 
-let copy=document.getElementById("result");
+  function setError(text) {
+    document.getElementById("errorBox").textContent = text || "";
+  }
 
-copy.select();
-document.execCommand("copy");
+  function shortText(text, start = 10, end = 10) {
+    if (!text) return "-";
+    if (text.length <= start + end) return text;
+    return text.slice(0, start) + "..." + text.slice(-end);
+  }
 
-alert("已复制，可以直接粘贴到MDAC");
+  function isTronAddress(address) {
+    return /^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(address);
+  }
 
-}
+  function formatTime(timestamp) {
+    if (!timestamp) return "-";
+    const date = new Date(timestamp);
+    return date.toLocaleString("zh-CN", {
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    });
+  }
 
-function openMDAC(){
+  function formatTokenAmount(value, decimals = 6) {
+    try {
+      if (value === undefined || value === null || value === "") return "0";
+      const bigValue = BigInt(String(value));
+      const base = BigInt(10) ** BigInt(decimals);
+      const integerPart = bigValue / base;
+      const decimalPart = bigValue % base;
+      let decimalStr = decimalPart.toString().padStart(decimals, "0").replace(/0+$/, "");
+      const intStr = integerPart.toString();
+      return decimalStr ? `${intStr}.${decimalStr}` : intStr;
+    } catch (err) {
+      return "0";
+    }
+  }
 
-window.open("https://imigresen-online.imi.gov.my/mdac/main","_blank");
+  function copyText(text) {
+    if (!text || text === "-") return;
+    navigator.clipboard.writeText(text).then(() => {
+      setStatus("已复制：" + shortText(text, 8, 8));
+      setTimeout(() => setStatus(""), 1500);
+    }).catch(() => setError("复制失败，请手动复制。"));
+  }
 
-}
+  function copyCurrentAddress() {
+    const address = document.getElementById("addressBox").textContent.trim();
+    copyText(address);
+  }
+
+  function copyBalance() {
+    if (!currentBalanceValue) return;
+    copyText(currentBalanceValue);
+  }
+
+  function openCurrentAddress() {
+    const address = document.getElementById("addressInput").value.trim() || currentQueryAddress;
+    if (!isTronAddress(address)) {
+      setError("请先输入或查询一个正确的 TRON 地址。 ");
+      return;
+    }
+    window.open(`https://tronscan.org/#/address/${address}`, "_blank", "noopener,noreferrer");
+  }
+
+  function getTransactionCacheKey(address) {
+    return TRANSACTION_CACHE_PREFIX + address;
+  }
+
+  function loadTransactionCache(address) {
+    try {
+      const cached = localStorage.getItem(getTransactionCacheKey(address));
+      const list = cached ? JSON.parse(cached) : [];
+      return Array.isArray(list) ? list : [];
+    } catch (err) {
+      return [];
+    }
+  }
+
+  function saveTransactionCache(address, transactions) {
+    try {
+      localStorage.setItem(getTransactionCacheKey(address), JSON.stringify(transactions));
+    } catch (err) {
+      setError("交易记录保存到浏览器失败。 ");
+    }
+  }
+
+  function getTransactionHash(tx) {
+    return tx.transaction_id || tx.transactionId || tx.hash || "";
+  }
+
+  function getLatestTransactionTimestamp(transactions) {
+    return transactions.reduce((latest, tx) => {
+      const timestamp = Number(tx.block_timestamp || 0);
+      return timestamp > latest ? timestamp : latest;
+    }, 0);
+  }
+
+  function mergeTransactions(cachedTransactions, latestTransactions) {
+    const transactionMap = new Map();
+
+    [...latestTransactions, ...cachedTransactions].forEach(tx => {
+      const hash = getTransactionHash(tx);
+      if (hash && !transactionMap.has(hash)) {
+        transactionMap.set(hash, tx);
+      }
+    });
+
+    return Array.from(transactionMap.values()).sort((a, b) =>
+      Number(b.block_timestamp || 0) - Number(a.block_timestamp || 0)
+    );
+  }
+
+  function openTransactionDetail(hash) {
+    if (!hash || hash === "-") return;
+    copyText(hash);
+    window.open(`https://tronscan.org/#/transaction/${hash}`, "_blank", "noopener,noreferrer");
+  }
+
+  function buildUrl(path, params = {}) {
+    const url = new URL(TRONGRID_BASE + path);
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        url.searchParams.set(key, value);
+      }
+    });
+    url.searchParams.set("_", Date.now().toString());
+    return url.toString();
+  }
+
+  async function requestJson(url, retryTimes = 2) {
+    const apiKey = document.getElementById("apiKeyInput").value.trim();
+    const headers = { "Accept": "application/json" };
+    if (apiKey) headers["TRON-PRO-API-KEY"] = apiKey;
+
+    let lastError = null;
+
+    for (let i = 0; i <= retryTimes; i++) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+          headers,
+          cache: "no-store",
+          signal: controller.signal
+        });
+
+        clearTimeout(timer);
+
+        if (response.status === 429) {
+          throw new Error("请求过快，被限流 429。请稍后再试。");
+        }
+
+        if (!response.ok) {
+          throw new Error("请求失败，状态码：" + response.status);
+        }
+
+        return await response.json();
+      } catch (err) {
+        clearTimeout(timer);
+        lastError = err;
+        if (i < retryTimes) {
+          await new Promise(resolve => setTimeout(resolve, 500 * (i + 1)));
+        }
+      }
+    }
+
+    throw lastError;
+  }
+
+  async function queryBalance(address) {
+    const url = buildUrl(`/v1/accounts/${address}`);
+    const data = await requestJson(url);
+    let balance = "0";
+
+    if (data && data.data && data.data.length > 0) {
+      const account = data.data[0];
+      if (Array.isArray(account.trc20)) {
+        for (const item of account.trc20) {
+          if (item[USDT_CONTRACT] !== undefined) {
+            balance = formatTokenAmount(item[USDT_CONTRACT], 6);
+            break;
+          }
+        }
+      }
+    }
+
+    return balance;
+  }
+
+  async function queryTransactions(address, minTimestamp = 0) {
+    const params = {
+      limit: minTimestamp ? UPDATE_TRANSACTION_LIMIT : INITIAL_TRANSACTION_LIMIT,
+      only_confirmed: false,
+      contract_address: USDT_CONTRACT,
+      order_by: "block_timestamp,desc"
+    };
+
+    if (minTimestamp) {
+      params.min_timestamp = minTimestamp;
+    }
+
+    const url = buildUrl(`/v1/accounts/${address}/transactions/trc20`, params);
+    const data = await requestJson(url);
+    const list = Array.isArray(data.data) ? data.data : [];
+
+    const seen = new Set();
+    return list.filter(tx => {
+      const hash = getTransactionHash(tx);
+      if (!hash || seen.has(hash)) return false;
+      seen.add(hash);
+      return true;
+    });
+  }
+
+  function renderEmpty(text) {
+    document.getElementById("txBody").innerHTML = `<tr><td colspan="5" class="empty">${text}</td></tr>`;
+  }
+
+  function updatePageText(total) {
+    const totalPage = Math.max(1, Math.ceil(total / pageSize));
+    if (currentPage > totalPage) currentPage = totalPage;
+
+    document.getElementById("pageText").textContent = `${currentPage} / ${totalPage}`;
+    document.getElementById("totalText").textContent = `共 ${total} 条`;
+
+    const isFirst = currentPage <= 1;
+    const isLast = currentPage >= totalPage;
+    togglePageBtn("firstPageBtn", isFirst);
+    togglePageBtn("prevPageBtn", isFirst);
+    togglePageBtn("nextPageBtn", isLast);
+    togglePageBtn("lastPageBtn", isLast);
+  }
+
+  function togglePageBtn(id, disabled) {
+    const btn = document.getElementById(id);
+    if (disabled) btn.classList.add("page-disabled");
+    else btn.classList.remove("page-disabled");
+  }
+
+  function escapeHtml(text) {
+    return String(text).replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#39;"
+    }[char]));
+  }
+
+  function getAddressClass(rowAddress, searchAddress) {
+    return rowAddress === searchAddress ? "addr-self" : "addr-other";
+  }
+
+  function isConfirmedTx(tx) {
+    if (tx.confirmed === false) return false;
+    if (tx.result && String(tx.result).toUpperCase() !== "SUCCESS") return false;
+    return true;
+  }
+
+  function renderTransactions(txs, address) {
+    const txBody = document.getElementById("txBody");
+    txBody.innerHTML = "";
+
+    if (!txs.length) {
+      renderEmpty("暂无 USDT 交易记录");
+      updatePageText(0);
+      return;
+    }
+
+    const startIndex = (currentPage - 1) * pageSize;
+    const pageData = txs.slice(startIndex, startIndex + pageSize);
+
+    pageData.forEach(tx => {
+      const time = formatTime(tx.block_timestamp);
+      const hash = tx.transaction_id || tx.transactionId || tx.hash || "-";
+      const from = tx.from || "-";
+      const to = tx.to || "-";
+      const decimals = tx.token_info && tx.token_info.decimals ? Number(tx.token_info.decimals) : 6;
+      const amount = formatTokenAmount(tx.value, decimals);
+      const isIn = to === address;
+      const amountClass = isIn ? "amount-in" : "amount-out";
+      const amountText = `${amount} USDT`;
+      const fromClass = getAddressClass(from, address);
+      const toClass = getAddressClass(to, address);
+      const confirmed = isConfirmedTx(tx);
+      const tag = confirmed
+        ? `<span class="ok-tag">已确认</span>`
+        : `<span class="pending-tag">待确认</span>`;
+
+      const row = document.createElement("tr");
+      const safeHash = escapeHtml(hash);
+      const safeShortHash = escapeHtml(shortText(hash, 16, 8));
+      const safeFrom = escapeHtml(from);
+      const safeTo = escapeHtml(to);
+      const safeTime = escapeHtml(time);
+      const safeAmountText = escapeHtml(amountText);
+      const hashArg = JSON.stringify(hash);
+      const fromArg = JSON.stringify(from);
+      const toArg = JSON.stringify(to);
+
+      row.innerHTML = `
+        <td class="hash-col">
+          <span class="hash-text" title="${safeHash}" onclick='openTransactionDetail(${hashArg})'>
+            ${safeShortHash}
+          </span>${tag}
+        </td>
+        <td class="time-col">${safeTime}</td>
+        <td class="addr-col"><span class="addr-full ${fromClass}" title="${safeFrom}" onclick='copyText(${fromArg})'>${safeFrom}</span></td>
+        <td class="addr-col"><span class="addr-full ${toClass}" title="${safeTo}" onclick='copyText(${toArg})'>${safeTo}</span></td>
+        <td class="amount-col ${amountClass}">${safeAmountText}</td>
+      `;
+      txBody.appendChild(row);
+    });
+
+    updatePageText(txs.length);
+  }
+
+  function goFirstPage() {
+    if (!allTransactions.length || currentPage === 1) return;
+    currentPage = 1;
+    renderTransactions(allTransactions, currentQueryAddress);
+  }
+
+  function goPrevPage() {
+    if (!allTransactions.length || currentPage <= 1) return;
+    currentPage--;
+    renderTransactions(allTransactions, currentQueryAddress);
+  }
+
+  function goNextPage() {
+    if (!allTransactions.length) return;
+    const totalPage = Math.ceil(allTransactions.length / pageSize);
+    if (currentPage >= totalPage) return;
+    currentPage++;
+    renderTransactions(allTransactions, currentQueryAddress);
+  }
+
+  function goLastPage() {
+    if (!allTransactions.length) return;
+    const totalPage = Math.ceil(allTransactions.length / pageSize);
+    if (currentPage === totalPage) return;
+    currentPage = totalPage;
+    renderTransactions(allTransactions, currentQueryAddress);
+  }
+
+  async function refreshOnce(address, queryId, cachedTransactions = [], silent = false) {
+    if (queryId !== activeQueryId) return;
+
+    if (!silent) {
+      setStatus(cachedTransactions.length
+        ? "正在更新余额和最新交易记录..."
+        : "正在查询余额和最近 50 笔交易记录...");
+    }
+
+    const minTimestamp = getLatestTransactionTimestamp(cachedTransactions);
+    const [balanceResult, txResult] = await Promise.allSettled([
+      queryBalance(address),
+      queryTransactions(address, minTimestamp)
+    ]);
+
+    if (queryId !== activeQueryId) return;
+
+    if (balanceResult.status === "fulfilled") {
+      currentBalanceValue = balanceResult.value;
+      document.getElementById("balanceBox").textContent = balanceResult.value + " USDT";
+    } else {
+      document.getElementById("balanceBox").textContent = "查询失败";
+    }
+
+    if (txResult.status === "fulfilled") {
+      allTransactions = mergeTransactions(cachedTransactions, txResult.value);
+      currentQueryAddress = address;
+      currentPage = 1;
+      saveTransactionCache(address, allTransactions);
+      renderTransactions(allTransactions, currentQueryAddress);
+    } else if (cachedTransactions.length) {
+      allTransactions = cachedTransactions;
+      currentQueryAddress = address;
+      currentPage = 1;
+      renderTransactions(allTransactions, currentQueryAddress);
+    }
+
+    if (balanceResult.status === "rejected" && txResult.status === "rejected") {
+      throw txResult.reason || balanceResult.reason;
+    }
+
+    if (txResult.status === "rejected") {
+      throw txResult.reason;
+    }
+  }
+
+  async function queryData() {
+    const queryBtn = document.getElementById("queryBtn");
+    const address = document.getElementById("addressInput").value.trim();
+    activeQueryId++;
+    const queryId = activeQueryId;
+
+    queryBtn.disabled = true;
+    queryBtn.textContent = "查询中";
+
+    setStatus("");
+    setError("");
+
+    try {
+      if (!isTronAddress(address)) {
+        allTransactions = [];
+        currentPage = 1;
+        currentQueryAddress = "";
+        currentBalanceValue = "";
+        document.getElementById("addressBox").textContent = address || "-";
+        document.getElementById("balanceBox").textContent = "-";
+        updatePageText(0);
+        renderEmpty("请输入正确的 TRON 地址");
+        setError("地址格式不正确，TRON 地址一般是 T 开头的 34 位地址。 ");
+        return;
+      }
+
+      const cachedTransactions = loadTransactionCache(address);
+      allTransactions = cachedTransactions;
+      currentPage = 1;
+      currentQueryAddress = address;
+      currentBalanceValue = "";
+
+      document.getElementById("addressBox").textContent = address;
+      document.getElementById("balanceBox").textContent = "-";
+
+      if (cachedTransactions.length) {
+        renderTransactions(cachedTransactions, address);
+      } else {
+        updatePageText(0);
+        renderEmpty("正在查询...");
+      }
+
+      await refreshOnce(address, queryId, cachedTransactions, false);
+      setStatus(cachedTransactions.length
+        ? "余额和最新交易记录已更新。 "
+        : "查询完成，交易记录已保存到当前浏览器。 ");
+    } catch (err) {
+      if (!allTransactions.length) {
+        document.getElementById("balanceBox").textContent = "-";
+        currentBalanceValue = "";
+        renderEmpty("查询失败");
+      }
+      setStatus("");
+
+      const message = err && err.message ? err.message : String(err);
+      if (message.includes("429") || message.includes("限流")) {
+        setError("请求过快，触发 429 限流。请稍后再点 查询/刷新。 ");
+      } else {
+        setError("查询失败：" + message + "。请稍后再试。 ");
+      }
+    } finally {
+      if (queryId === activeQueryId) {
+        queryBtn.disabled = false;
+        queryBtn.textContent = "查询/刷新";
+      }
+    }
+  }
+
+  async function updateCurrentAddress() {
+    const updateBtn = document.getElementById("updateBalanceBtn");
+    const address = document.getElementById("addressInput").value.trim();
+
+    setStatus("");
+    setError("");
+
+    if (!isTronAddress(address)) {
+      setError("请先输入或查询一个正确的 TRON 地址。 ");
+      return;
+    }
+
+    activeQueryId++;
+    const queryId = activeQueryId;
+    updateBtn.disabled = true;
+    updateBtn.textContent = "更新中";
+
+    const cachedTransactions = loadTransactionCache(address);
+    allTransactions = cachedTransactions;
+    currentPage = 1;
+    currentQueryAddress = address;
+    document.getElementById("addressBox").textContent = address;
+
+    if (cachedTransactions.length) {
+      renderTransactions(cachedTransactions, address);
+    } else {
+      updatePageText(0);
+      renderEmpty("正在查询...");
+    }
+
+    try {
+      setStatus("正在更新余额和最新交易记录...");
+      await refreshOnce(address, queryId, cachedTransactions, true);
+      setStatus("余额和最新交易记录已更新。 ");
+    } catch (err) {
+      const message = err && err.message ? err.message : String(err);
+      setStatus("");
+      setError("更新失败：" + message + "。请稍后再试。 ");
+    } finally {
+      if (queryId === activeQueryId) {
+        updateBtn.disabled = false;
+        updateBtn.textContent = "更新余额";
+      }
+    }
+  }
 
 </script>
 
